@@ -161,13 +161,15 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: "ФСБ · Тест 2–3",
+          content: "<@" + disc + ">",
+          allowed_mentions: { users: [disc] },
           embeds: [{
             title: ok ? "Тест сдан" : "Тест не сдан",
             color: ok ? 0x3dd68c : 0xff6b7a,
             fields: [
               { name: "Имя Фамилия", value: nick, inline: false },
               { name: "Ранг", value: rank, inline: true },
-              { name: "ID Discord", value: disc, inline: true },
+              { name: "Discord", value: "<@" + disc + ">", inline: true },
               { name: "Статус", value: ok ? "Сдал" : "Не сдал", inline: true },
               { name: "Баллы", value: score + "/" + QUESTIONS.length, inline: true }
             ],
