@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ФСБ · Тест 1–2 ранг</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050508; --panel: #12131a; --row: #2a2c3e; --row-hover: #32344a;
+      --row-on: #32304a; --text: #ececf3; --muted: #9a9bb0; --violet: #7b6cff;
+      --pass: #3dd68c; --fail: #ff6b7a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: Inter, sans-serif; }
+    body { display: flex; justify-content: center; }
+    .app { width: 100%; max-width: 430px; min-height: 100vh; }
+    .top-pad { height: 56px; }
+    .panel { margin: 0 10px 24px; background: var(--panel); border-radius: 18px; padding: 18px 14px 22px; }
+    .q { margin-bottom: 22px; }
+    .q:last-child { margin-bottom: 0; }
+    .q-title { font-size: 14.5px; line-height: 1.45; font-weight: 600; margin: 0 4px 10px; }
+    .opts { display: flex; flex-direction: column; gap: 8px; }
+    .opt {
+      display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 14px;
+      background: var(--row); border: none; border-radius: 999px; color: var(--text);
+      font: 500 14.5px/1.3 Inter, sans-serif; text-align: left; cursor: pointer; width: 100%;
+    }
+    .opt:hover { background: var(--row-hover); }
+    .opt.on { background: var(--row-on); }
+    .opt.ok, .opt.ok.on { background: #163226; color: var(--pass); }
+    .opt.bad, .opt.bad.on { background: #3a1a20; color: var(--fail); }
+    .radio { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; background: #6d6f82; box-shadow: inset 0 0 0 5px #6d6f82; }
+    .opt.on .radio { background: #fff; box-shadow: inset 0 0 0 5px var(--violet); }
+    .opt.ok .radio { background: #fff; box-shadow: inset 0 0 0 5px var(--pass); }
+    .opt.bad .radio { background: #fff; box-shadow: inset 0 0 0 5px var(--fail); }
+    .bar { position: sticky; bottom: 0; padding: 12px 16px calc(16px + env(safe-area-inset-bottom)); background: linear-gradient(to top, #050508 70%, transparent); }
+    .submit { width: 100%; height: 50px; border: none; border-radius: 14px; background: var(--violet); color: #fff; font: 650 16px Inter, sans-serif; cursor: pointer; }
+    .submit:disabled { background: #3a3b52; color: #8a8aa0; cursor: not-allowed; }
+    .screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 22px; text-align: center; }
+    .badge { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--violet); font-weight: 700; margin-bottom: 14px; }
+    .screen h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+    .screen p { color: var(--muted); font-size: 15px; line-height: 1.5; max-width: 320px; }
+    .score { font-size: 56px; font-weight: 700; margin: 22px 0 8px; }
+    .score.pass { color: var(--pass); }
+    .score.fail { color: var(--fail); }
+    .status { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .ghost { margin: 20px 0 28px; background: var(--row); color: var(--text); border: none; border-radius: 14px; height: 48px; padding: 0 22px; font: 600 15px Inter, sans-serif; cursor: pointer; width: min(320px, 100%); }
+    .nick { width: 100%; max-width: 320px; height: 48px; margin: 8px 0; border: none; border-radius: 14px; background: var(--row); color: var(--text); padding: 0 16px; font: 500 15px Inter, sans-serif; outline: none; }
+    .progress { color: var(--muted); font-size: 12px; text-align: right; padding: 0 16px 8px; }
+    .hint { font-size: 12px; color: #6e6f84; margin-top: 10px; }
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.62);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; z-index: 20;
+    }
+    .plaque {
+      width: min(340px, 100%);
+      background: var(--panel);
+      border-radius: 22px;
+      padding: 28px 22px 22px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app"></div>
+  <script>
+    const WEBHOOK = "https://discord.com/api/webhooks/1542877684252680242/odwVVl_HRglI9jvkg2uJXabWUp_7txjO7tF5PnSKZIMgneUKUQNvCHuUv2ls7IOT1g1a";
+    const PASS = 15;
+    const QUESTIONS = [
+      { tag: "УПК", text: "Задержание по УПК — это:", options: ["Наказание до 5 лет на месте", "Мера принуждения до 1 часа", "Обязательный арест на сутки", "Штраф без ограничения свободы"], correct: 1 },
+      { tag: "УПК", text: "Сколько оснований из списка главы II достаточно, чтобы задержать?", options: ["Все сразу", "Минимум три", "Хотя бы одно", "Только решение суда"], correct: 2 },
+      { tag: "УПК", text: "Что из этого само по себе даёт основание задержать?", options: ["Человек вам не понравился", "Отказ поздороваться", "Видео фиксация, что правонарушение совершил именно он", "Он стоит рядом с местом преступления"], correct: 2 },
+      { tag: "УПК", text: "Досмотр и обыск по УПК:", options: ["Это одно и то же", "Досмотр — с согласия, обыск — без согласия", "Обыск всегда только по суду", "Досмотр запрещён сотруднику ФСБ"], correct: 1 },
+      { tag: "УПК", text: "Если надели наручники только для привода и сразу сняли после цели:", options: ["Это всегда новое задержание и новый час", "Это не считается новым задержанием", "Час обнуляется и начинается заново", "Это незаконно в любом случае"], correct: 1 },
+      { tag: "УПК", text: "Задержанный заявил о неприкосновенности до личного обыска. Что делать?", options: ["Обыскать, статус проверить потом", "Игнорировать, у ФСБ исключение", "Сначала проверить статус, не делать действие, для которого нужна спецпроцедура", "Сразу отпустить без проверки"], correct: 2 },
+      { tag: "УПК", text: "Задержали законно, состав оказался исключительной подследственности СК/ФСБ, а вы не тот орган. Что нельзя?", options: ["Сделать неотложку и вызвать уполномоченного", "Передать задержанного, видео и изъятое", "Окончательно закрыть материал самим", "Остаться и показать запись прибывшему"], correct: 2 },
+      { tag: "УПК", text: "При передаче задержанного в другой орган час:", options: ["Начинается заново", "Обнуляется на 30 минут", "Идёт с первого ограничения свободы и не прерывается", "Останавливается до прибытия следователя"], correct: 2 },
+      { tag: "УПК", text: "Упрощённо закрыть материал на месте нельзя, если задержанный:", options: ["Гражданский без статуса", "Госслужащий или лицо со спецстатусом", "Впервые нарушил ПДД", "Согласен со штрафом"], correct: 1 },
+      { tag: "УПК", text: "Устное требование для 17.6 должно быть:", options: ["Вежливым предложением «не мог бы»", "Понятным, повелительным и по компетенции", "Любой фразой сотрудника в форме", "Только письменным"], correct: 1 },
+      { tag: "УПК", text: "Смертельную силу по УПК можно применить:", options: ["Чтобы человек не ушёл от статьи", "После любого отказа лечь", "Только при непосредственной угрозе жизни себе или другим", "Для остановки любой машины"], correct: 2 },
+      { tag: "УПК", text: "Предупредительный выстрел:", options: ["Обязателен перед применением оружия", "Разрешён в воздух", "Запрещён", "Разрешён только ФСБ"], correct: 2 },
+      { tag: "УК", text: "Может ли приказ или устав создать новый состав преступления?", options: ["Да, если приказ директора ФСБ", "Да, если это внутренний акт", "Нет. Преступление только то, что есть в УК", "Да, на территории Лубянки"], correct: 2 },
+      { tag: "УК", text: "Статья 17.6 УК — это:", options: ["Оскорбление сотрудника", "Неповиновение законному требованию уполномоченного лица", "Посягательство на жизнь", "Получение взятки"], correct: 1 },
+      { tag: "УК", text: "Резкая критика работы государственного органа — это 17.3?", options: ["Да, всегда", "Да, если сказано при форме", "Нет. Критика сама по себе состава не даёт", "Только если есть свидетели"], correct: 2 },
+      { tag: "УК", text: "Уголовный штраф госслужащему на месте назначает:", options: ["Сотрудник, который задержал", "Любой оперуполномоченный ФСБ", "Только прокурор", "Директор ФСБ лично"], correct: 2 },
+      { tag: "УК", text: "Пометка (С) в статье значит:", options: ["Статья секретная", "Судимость при лишении свободы по этой статье/части", "Штраф обязателен", "Дело всегда у ФСБ"], correct: 1 },
+      { tag: "УК", text: "Лишение свободы вне суда за один выход обычно не больше:", options: ["2 лет", "5 лет", "10 лет", "Бессрочно"], correct: 1 },
+      { tag: "УК", text: "Заведомо незаконные задержание, обыск или сила сотрудником — это:", options: ["17.6", "17.3", "15.2", "16.7"], correct: 2 },
+      { tag: "УСТАВ", text: "К старшему офицерскому составу (от майора) по уставу обращаются:", options: ["По имени", "«Брат»", "«Товарищ [звание]»", "Как удобно вне строя"], correct: 2 }
+    ];
+
+    const app = document.getElementById("app");
+    const answers = Array(QUESTIONS.length).fill(null);
+    let nick = "", rank = "", disc = "";
+
+    function startScreen() {
+      app.innerHTML = `
+        <div class="screen">
+          <div class="badge">ФСБ · Россия Онлайн · Кутузовский</div>
+          <h1>Тест на 1–2 ранг</h1>
+          <p>20 вопросов. Зачёт с ${PASS}/20. Результат уходит в Discord.</p>
+          <input class="nick" id="nick" placeholder="Имя Фамилия" maxlength="40" />
+          <input class="nick" id="rank" placeholder="Ранг" maxlength="16" />
+          <input class="nick" id="disc" placeholder="ID Discord" maxlength="32" />
+          <button class="submit" style="max-width:320px;margin-top:12px" id="go">Начать тест</button>
+        </div>`;
+      document.getElementById("go").onclick = () => {
+        nick = document.getElementById("nick").value.trim();
+        rank = document.getElementById("rank").value.trim();
+        disc = document.getElementById("disc").value.trim();
+        if (!nick) return document.getElementById("nick").focus();
+        if (!rank) return document.getElementById("rank").focus();
+        if (!disc) return document.getElementById("disc").focus();
+        renderQuiz();
+      };
+    }
+
+    function renderQuiz() {
+      const filled = answers.filter((a) => a !== null).length;
+      app.innerHTML = `
+        <div class="top-pad"></div>
+        <div class="progress">${filled} / ${QUESTIONS.length}</div>
+        <div class="panel" id="list"></div>
+        <div class="bar">
+          <button class="submit" id="send" ${filled < QUESTIONS.length ? "disabled" : ""}>Отправить</button>
+        </div>`;
+      const list = document.getElementById("list");
+      QUESTIONS.forEach((q, qi) => {
+        const wrap = document.createElement("div");
+        wrap.className = "q";
+        wrap.innerHTML = `<div class="q-title">${qi + 1}. [${q.tag}] ${q.text}</div>`;
+        const opts = document.createElement("div");
+        opts.className = "opts";
+        q.options.forEach((label, oi) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "opt" + (answers[qi] === oi ? " on" : "");
+          b.innerHTML = `<span class="radio"></span><span>${label}</span>`;
+          b.onclick = () => { answers[qi] = oi; renderQuiz(); };
+          opts.appendChild(b);
+        });
+        wrap.appendChild(opts);
+        list.appendChild(wrap);
+      });
+      document.getElementById("send").onclick = showResult;
+    }
+
+    function optionClass(q, oi, picked) {
+      if (oi !== picked) return "opt";
+      return oi === q.correct ? "opt ok" : "opt bad";
+    }
+
+    async function sendDiscord(score, ok) {
+      const url = WEBHOOK.trim();
+      if (!url) return "no-hook";
+      const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "ФСБ · Тест",
+          embeds: [{
+            title: ok ? "Тест сдан" : "Тест не сдан",
+            color: ok ? 0x3dd68c : 0xff6b7a,
+            fields: [
+              { name: "Имя Фамилия", value: nick, inline: false },
+              { name: "Ранг", value: rank, inline: true },
+              { name: "ID Discord", value: disc, inline: true },
+              { name: "Статус", value: ok ? "Сдал" : "Не сдал", inline: true },
+              { name: "Баллы", value: score + "/" + QUESTIONS.length, inline: true }
+            ],
+            footer: { text: "ФСБ · Кутузовский" },
+            timestamp: new Date().toISOString()
+          }]
+        })
+      });
+      if (!r.ok) throw new Error("discord " + r.status);
+      return "ok";
+    }
+
+    async function showResult() {
+      let score = 0;
+      QUESTIONS.forEach((q, i) => { if (answers[i] === q.correct) score++; });
+      const ok = score >= PASS;
+      const box = document.createElement("div");
+      box.className = "overlay";
+      box.innerHTML = `
+        <div class="plaque">
+          <div class="badge">${nick}</div>
+          <div class="status">${ok ? "Вы сдали" : "Вы не сдали"}</div>
+          <div class="score ${ok ? "pass" : "fail"}">${score}/${QUESTIONS.length}</div>
+          <p class="hint" id="hook"></p>
+          <button class="ghost" id="again" style="margin:16px 0 0;width:100%">Закрыть</button>
+        </div>`;
+      document.body.appendChild(box);
+      try {
+        const st = await sendDiscord(score, ok);
+        document.getElementById("hook").textContent = st === "no-hook"
+          ? "Webhook не прописан — в Discord не ушло."
+          : "Отправлено в Discord.";
+      } catch (e) {
+        document.getElementById("hook").textContent = "В Discord не ушло.";
+      }
+      document.getElementById("again").onclick = () => {
+        box.remove();
+        answers.fill(null);
+        startScreen();
+      };
+    }
+
+    startScreen();
+  </script>
+</body>
+</html>
