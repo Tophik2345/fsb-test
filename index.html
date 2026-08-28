@@ -26,10 +26,22 @@
       position: absolute; inset: 0;
       background: linear-gradient(180deg, rgba(5,6,12,.55) 0%, rgba(5,6,12,.72) 45%, rgba(5,6,12,.88) 100%);
     }
-    @keyframes ken {
-      from { transform: scale(1.05) translate(-1.5%, 0); }
-      to { transform: scale(1.14) translate(1.5%, -1%); }
+    .fx .rain {
+      position: absolute; inset: -30% 0;
+      background: repeating-linear-gradient(
+        185deg,
+        transparent 0 12px,
+        rgba(200,220,255,.07) 12px 13px,
+        transparent 13px 28px
+      );
+      animation: rain 1.6s linear infinite;
+      opacity: .55;
     }
+    @keyframes ken {
+      from { transform: scale(1.08) translate(-2%, 1%); }
+      to { transform: scale(1.22) translate(2.5%, -2%); }
+    }
+    @keyframes rain { from { transform: translateY(-12%); } to { transform: translateY(12%); } }
     .app { width: 100%; max-width: 760px; min-height: 100vh; position: relative; z-index: 1; }
     .top-pad { height: 56px; }
     .panel { margin: 0 10px 24px; background: var(--panel); border-radius: 18px; padding: 18px 14px 22px; backdrop-filter: blur(10px); }
@@ -66,7 +78,7 @@
   </style>
 </head>
 <body>
-  <div class="fx" aria-hidden="true"><div class="photo"></div><div class="dim"></div></div>
+  <div class="fx" aria-hidden="true"><div class="photo"></div><div class="rain"></div><div class="dim"></div></div>
   <div class="app" id="app"></div>
   <script>
     const WEBHOOK = "https://discord.com/api/webhooks/1542877684252680242/odwVVl_HRglI9jvkg2uJXabWUp_7txjO7tF5PnSKZIMgneUKUQNvCHuUv2ls7IOT1g1a";
