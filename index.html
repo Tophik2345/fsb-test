@@ -27,15 +27,13 @@
       background: linear-gradient(180deg, rgba(5,6,12,.55) 0%, rgba(5,6,12,.72) 45%, rgba(5,6,12,.88) 100%);
     }
     .fx .rain {
-      position: absolute; inset: -30% 0;
-      background: repeating-linear-gradient(
-        185deg,
-        transparent 0 12px,
-        rgba(200,220,255,.07) 12px 13px,
-        transparent 13px 28px
-      );
-      animation: rain 1.6s linear infinite;
-      opacity: .55;
+      position: absolute; inset: -40% 0;
+      background:
+        repeating-linear-gradient(188deg, transparent 0 10px, rgba(220,235,255,.18) 10px 11px, transparent 11px 22px),
+        repeating-linear-gradient(172deg, transparent 0 16px, rgba(180,200,230,.10) 16px 17px, transparent 17px 34px);
+      animation: rain .9s linear infinite;
+      opacity: .85;
+      mix-blend-mode: screen;
     }
     @keyframes ken {
       from { transform: scale(1.08) translate(-2%, 1%); }
