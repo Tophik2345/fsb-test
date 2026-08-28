@@ -3,21 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>ФСБ · Тест 1–2 ранг</title>
+  <title>ФСБ · Тест 2–3 ранг</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #050508; --panel: #12131a; --row: #2a2c3e; --row-hover: #32344a;
+      --bg: #05060c; --panel: #12131ae6; --row: #2a2c3e; --row-hover: #32344a;
       --row-on: #32304a; --text: #ececf3; --muted: #9a9bb0; --violet: #7b6cff;
       --pass: #3dd68c; --fail: #ff6b7a;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: Inter, sans-serif; }
-    body { display: flex; justify-content: center; }
-    .app { width: 100%; max-width: 430px; min-height: 100vh; }
+    html, body { min-height: 100%; background: #05060c; color: var(--text); font-family: Inter, sans-serif; }
+    body { display: flex; justify-content: center; position: relative; overflow-x: hidden; }
+    .fx { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .fx .orb {
+      position: absolute; border-radius: 50%; filter: blur(40px);
+      animation: float 16s ease-in-out infinite alternate;
+    }
+    .fx .o1 { width: 48vw; height: 48vw; left: -12%; top: -18%; background: rgba(120, 18, 32, .4); }
+    .fx .o2 { width: 40vw; height: 40vw; right: -10%; bottom: -20%; background: rgba(32, 40, 110, .38); animation-duration: 22s; }
+    .fx .scan {
+      position: absolute; inset: -20% 0;
+      background: repeating-linear-gradient(180deg, transparent 0 7px, rgba(255,255,255,.015) 7px 8px);
+      animation: scan 12s linear infinite;
+    }
+    .fx .mark {
+      position: absolute; left: 50%; top: 44%; transform: translate(-50%,-50%);
+      font-size: min(32vw, 240px); font-weight: 800; letter-spacing: .14em;
+      color: rgba(255,255,255,.04); animation: pulse 7s ease-in-out infinite;
+    }
+    @keyframes float {
+      from { transform: translate(-3%, 2%) scale(1); }
+      to { transform: translate(4%, -3%) scale(1.12); }
+    }
+    @keyframes scan { from { transform: translateY(-8%); } to { transform: translateY(8%); } }
+    @keyframes pulse { 0%,100% { opacity: .5; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 1; transform: translate(-50%,-50%) scale(1.04); } }
+    .app { width: 100%; max-width: 760px; min-height: 100vh; position: relative; z-index: 1; }
     .top-pad { height: 56px; }
-    .panel { margin: 0 10px 24px; background: var(--panel); border-radius: 18px; padding: 18px 14px 22px; }
+    .panel { margin: 0 10px 24px; background: var(--panel); border-radius: 18px; padding: 18px 14px 22px; backdrop-filter: blur(10px); }
     .q { margin-bottom: 22px; }
     .q:last-child { margin-bottom: 0; }
     .q-title { font-size: 14.5px; line-height: 1.45; font-weight: 600; margin: 0 4px 10px; }
@@ -29,13 +52,9 @@
     }
     .opt:hover { background: var(--row-hover); }
     .opt.on { background: var(--row-on); }
-    .opt.ok, .opt.ok.on { background: #163226; color: var(--pass); }
-    .opt.bad, .opt.bad.on { background: #3a1a20; color: var(--fail); }
     .radio { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; background: #6d6f82; box-shadow: inset 0 0 0 5px #6d6f82; }
     .opt.on .radio { background: #fff; box-shadow: inset 0 0 0 5px var(--violet); }
-    .opt.ok .radio { background: #fff; box-shadow: inset 0 0 0 5px var(--pass); }
-    .opt.bad .radio { background: #fff; box-shadow: inset 0 0 0 5px var(--fail); }
-    .bar { position: sticky; bottom: 0; padding: 12px 16px calc(16px + env(safe-area-inset-bottom)); background: linear-gradient(to top, #050508 70%, transparent); }
+    .bar { position: sticky; bottom: 0; padding: 12px 16px calc(16px + env(safe-area-inset-bottom)); background: linear-gradient(to top, #05060c 70%, transparent); }
     .submit { width: 100%; height: 50px; border: none; border-radius: 14px; background: var(--violet); color: #fff; font: 650 16px Inter, sans-serif; cursor: pointer; }
     .submit:disabled { background: #3a3b52; color: #8a8aa0; cursor: not-allowed; }
     .screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 22px; text-align: center; }
@@ -50,46 +69,37 @@
     .nick { width: 100%; max-width: 320px; height: 48px; margin: 8px 0; border: none; border-radius: 14px; background: var(--row); color: var(--text); padding: 0 16px; font: 500 15px Inter, sans-serif; outline: none; }
     .progress { color: var(--muted); font-size: 12px; text-align: right; padding: 0 16px 8px; }
     .hint { font-size: 12px; color: #6e6f84; margin-top: 10px; }
-    .overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.62);
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px; z-index: 20;
-    }
-    .plaque {
-      width: min(340px, 100%);
-      background: var(--panel);
-      border-radius: 22px;
-      padding: 28px 22px 22px;
-      text-align: center;
-    }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.62); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 20; }
+    .plaque { width: min(340px, 100%); background: #161722; border-radius: 22px; padding: 28px 22px 22px; text-align: center; }
   </style>
 </head>
 <body>
+  <div class="fx" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="scan"></div><div class="mark">ФСБ</div></div>
   <div class="app" id="app"></div>
   <script>
     const WEBHOOK = "https://discord.com/api/webhooks/1542877684252680242/odwVVl_HRglI9jvkg2uJXabWUp_7txjO7tF5PnSKZIMgneUKUQNvCHuUv2ls7IOT1g1a";
     const PASS = 15;
     const QUESTIONS = [
       { tag: "УПК", text: "Задержание по УПК — это:", options: ["Наказание до 5 лет на месте", "Мера принуждения до 1 часа", "Обязательный арест на сутки", "Штраф без ограничения свободы"], correct: 1 },
-      { tag: "УПК", text: "Сколько оснований из списка главы II достаточно, чтобы задержать?", options: ["Все сразу", "Минимум три", "Хотя бы одно", "Только решение суда"], correct: 2 },
-      { tag: "УПК", text: "Что из этого само по себе даёт основание задержать?", options: ["Человек вам не понравился", "Отказ поздороваться", "Видео фиксация, что правонарушение совершил именно он", "Он стоит рядом с местом преступления"], correct: 2 },
-      { tag: "УПК", text: "Досмотр и обыск по УПК:", options: ["Это одно и то же", "Досмотр — с согласия, обыск — без согласия", "Обыск всегда только по суду", "Досмотр запрещён сотруднику ФСБ"], correct: 1 },
-      { tag: "УПК", text: "Если надели наручники только для привода и сразу сняли после цели:", options: ["Это всегда новое задержание и новый час", "Это не считается новым задержанием", "Час обнуляется и начинается заново", "Это незаконно в любом случае"], correct: 1 },
-      { tag: "УПК", text: "Задержанный заявил о неприкосновенности до личного обыска. Что делать?", options: ["Обыскать, статус проверить потом", "Игнорировать, у ФСБ исключение", "Сначала проверить статус, не делать действие, для которого нужна спецпроцедура", "Сразу отпустить без проверки"], correct: 2 },
-      { tag: "УПК", text: "Задержали законно, состав оказался исключительной подследственности СК/ФСБ, а вы не тот орган. Что нельзя?", options: ["Сделать неотложку и вызвать уполномоченного", "Передать задержанного, видео и изъятое", "Окончательно закрыть материал самим", "Остаться и показать запись прибывшему"], correct: 2 },
-      { tag: "УПК", text: "При передаче задержанного в другой орган час:", options: ["Начинается заново", "Обнуляется на 30 минут", "Идёт с первого ограничения свободы и не прерывается", "Останавливается до прибытия следователя"], correct: 2 },
-      { tag: "УПК", text: "Упрощённо закрыть материал на месте нельзя, если задержанный:", options: ["Гражданский без статуса", "Госслужащий или лицо со спецстатусом", "Впервые нарушил ПДД", "Согласен со штрафом"], correct: 1 },
-      { tag: "УПК", text: "Устное требование для 17.6 должно быть:", options: ["Вежливым предложением «не мог бы»", "Понятным, повелительным и по компетенции", "Любой фразой сотрудника в форме", "Только письменным"], correct: 1 },
-      { tag: "УПК", text: "Смертельную силу по УПК можно применить:", options: ["Чтобы человек не ушёл от статьи", "После любого отказа лечь", "Только при непосредственной угрозе жизни себе или другим", "Для остановки любой машины"], correct: 2 },
-      { tag: "УПК", text: "Предупредительный выстрел:", options: ["Обязателен перед применением оружия", "Разрешён в воздух", "Запрещён", "Разрешён только ФСБ"], correct: 2 },
-      { tag: "УК", text: "Может ли приказ или устав создать новый состав преступления?", options: ["Да, если приказ директора ФСБ", "Да, если это внутренний акт", "Нет. Преступление только то, что есть в УК", "Да, на территории Лубянки"], correct: 2 },
-      { tag: "УК", text: "Статья 17.6 УК — это:", options: ["Оскорбление сотрудника", "Неповиновение законному требованию уполномоченного лица", "Посягательство на жизнь", "Получение взятки"], correct: 1 },
-      { tag: "УК", text: "Резкая критика работы государственного органа — это 17.3?", options: ["Да, всегда", "Да, если сказано при форме", "Нет. Критика сама по себе состава не даёт", "Только если есть свидетели"], correct: 2 },
-      { tag: "УК", text: "Уголовный штраф госслужащему на месте назначает:", options: ["Сотрудник, который задержал", "Любой оперуполномоченный ФСБ", "Только прокурор", "Директор ФСБ лично"], correct: 2 },
-      { tag: "УК", text: "Пометка (С) в статье значит:", options: ["Статья секретная", "Судимость при лишении свободы по этой статье/части", "Штраф обязателен", "Дело всегда у ФСБ"], correct: 1 },
-      { tag: "УК", text: "Лишение свободы вне суда за один выход обычно не больше:", options: ["2 лет", "5 лет", "10 лет", "Бессрочно"], correct: 1 },
-      { tag: "УК", text: "Заведомо незаконные задержание, обыск или сила сотрудником — это:", options: ["17.6", "17.3", "15.2", "16.7"], correct: 2 },
-      { tag: "УСТАВ", text: "К старшему офицерскому составу (от майора) по уставу обращаются:", options: ["По имени", "«Брат»", "«Товарищ [звание]»", "Как удобно вне строя"], correct: 2 }
+      { tag: "УПК", text: "Для задержания достаточно:", options: ["Всех оснований сразу", "Минимум трёх", "Хотя бы одного из списка главы II", "Только решения суда"], correct: 2 },
+      { tag: "УПК", text: "Досмотр и обыск:", options: ["Одно и то же", "Досмотр с согласия, обыск без согласия", "Обыск всегда только по суду", "Досмотр ФСБ запрещён"], correct: 1 },
+      { tag: "УПК", text: "Неприкосновенность заявлена до личного обыска:", options: ["Обыскать, статус потом", "Сначала проверить статус", "У ФСБ исключения нет процедуры", "Отпустить без проверки"], correct: 1 },
+      { tag: "УПК", text: "Наручники только для привода и сразу сняты:", options: ["Новое задержание и новый час", "Не считается новым задержанием", "Час обнуляется", "Всегда незаконно"], correct: 1 },
+      { tag: "УПК", text: "Состав исключительной подследственности СК/ФСБ, задержали не тот орган. Нельзя:", options: ["Неотложка и вызов уполномоченного", "Передать человека, видео, изъятое", "Окончательно закрыть материал самим", "Остаться и показать запись"], correct: 2 },
+      { tag: "УПК", text: "При передаче задержанного час:", options: ["Начинается заново", "Обнуляется на 30 минут", "Идёт с первого ограничения свободы", "Ждёт следователя"], correct: 2 },
+      { tag: "УПК", text: "Упрощёнка на месте запрещена, если задержанный:", options: ["Гражданский без статуса", "Госслужащий или спецстатус", "Впервые нарушил", "Согласен со штрафом"], correct: 1 },
+      { tag: "УПК", text: "Требование для 17.6:", options: ["«Не мог бы»", "Понятное, повелительное, по компетенции", "Любая фраза в форме", "Только письменное"], correct: 1 },
+      { tag: "УПК", text: "Смертельная сила:", options: ["Чтобы не ушёл от статьи", "После отказа лечь", "Только при непосредственной угрозе жизни", "Для любой остановки ТС"], correct: 2 },
+      { tag: "УПК", text: "Предупредительный выстрел:", options: ["Обязателен", "В воздух можно", "Запрещён", "Можно только ФСБ"], correct: 2 },
+      { tag: "УПК", text: "Бежит, жизни не угрожает:", options: ["Можно стрелять", "Нельзя стрелять", "Можно после третьего окрика", "Можно в ноги"], correct: 1 },
+      { tag: "УК", text: "Приказ или устав может создать состав УК?", options: ["Да, приказ директора", "Да, внутренний акт", "Нет. Только то, что есть в УК", "Да, на Лубянке"], correct: 2 },
+      { tag: "УК", text: "17.6 — это:", options: ["Оскорбление", "Неповиновение законному требованию", "Посягательство на жизнь", "Взятка"], correct: 1 },
+      { tag: "УК", text: "Резкая критика работы органа — 17.3?", options: ["Всегда да", "Да, при форме", "Нет, критика сама по себе не состав", "Да, при свидетелях"], correct: 2 },
+      { tag: "УК", text: "Штраф госслужащему на месте назначает:", options: ["Кто задержал", "Любой оперуполномоченный", "Только прокурор", "Директор ФСБ"], correct: 2 },
+      { tag: "УК", text: "Пометка (С):", options: ["Секретная статья", "Судимость при лишении свободы по этой статье/части", "Обязательный штраф", "Дело всегда у ФСБ"], correct: 1 },
+      { tag: "УК", text: "Срок вне суда за выход обычно не больше:", options: ["2 лет", "5 лет", "10 лет", "Бессрочно"], correct: 1 },
+      { tag: "УК", text: "Заведомо незаконные задержание, обыск, сила сотрудником:", options: ["17.6", "17.3", "15.2", "16.7"], correct: 2 },
+      { tag: "УК", text: "Фальсификация доказательств:", options: ["17.5", "15.6", "16.4", "17.1"], correct: 2 }
     ];
 
     const app = document.getElementById("app");
@@ -100,20 +110,23 @@
       app.innerHTML = `
         <div class="screen">
           <div class="badge">ФСБ · Россия Онлайн · Кутузовский</div>
-          <h1>Тест на 1–2 ранг</h1>
+          <h1>Тест на 2–3 ранг</h1>
           <p>20 вопросов. Зачёт с ${PASS}/20. Результат уходит в Discord.</p>
           <input class="nick" id="nick" placeholder="Имя Фамилия" maxlength="40" />
           <input class="nick" id="rank" placeholder="Ранг" maxlength="16" />
-          <input class="nick" id="disc" placeholder="ID Discord" maxlength="32" />
+          <input class="nick" id="disc" placeholder="ID Discord (только цифры)" maxlength="32" />
           <button class="submit" style="max-width:320px;margin-top:12px" id="go">Начать тест</button>
         </div>`;
       document.getElementById("go").onclick = () => {
-        nick = document.getElementById("nick").value.trim();
+        nick = document.getElementById("nick").value.trim().replace(/\s+/g, " ");
         rank = document.getElementById("rank").value.trim();
         disc = document.getElementById("disc").value.trim();
-        if (!nick) return document.getElementById("nick").focus();
-        if (!rank) return document.getElementById("rank").focus();
-        if (!disc) return document.getElementById("disc").focus();
+        const nameOk = /^[A-Za-zА-Яа-яЁё]{2,}(?:[\-'][A-Za-zА-Яа-яЁё]+)*\s+[A-Za-zА-Яа-яЁё]{2,}(?:[\-'][A-Za-zА-Яа-яЁё]+)*$/.test(nick);
+        const rankOk = /^\d{1,3}$/.test(rank);
+        const idOk = /^\d{17,20}$/.test(disc);
+        if (!nameOk) { alert("Имя Фамилия: два слова, как в IC."); return document.getElementById("nick").focus(); }
+        if (!rankOk) { alert("Ранг — число."); return document.getElementById("rank").focus(); }
+        if (!idOk) { alert("ID Discord — только цифры, 17–20 знаков."); return document.getElementById("disc").focus(); }
         renderQuiz();
       };
     }
@@ -148,11 +161,6 @@
       document.getElementById("send").onclick = showResult;
     }
 
-    function optionClass(q, oi, picked) {
-      if (oi !== picked) return "opt";
-      return oi === q.correct ? "opt ok" : "opt bad";
-    }
-
     async function sendDiscord(score, ok) {
       const url = WEBHOOK.trim();
       if (!url) return "no-hook";
@@ -160,7 +168,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: "ФСБ · Тест",
+          username: "ФСБ · Тест 2–3",
           embeds: [{
             title: ok ? "Тест сдан" : "Тест не сдан",
             color: ok ? 0x3dd68c : 0xff6b7a,
@@ -171,7 +179,7 @@
               { name: "Статус", value: ok ? "Сдал" : "Не сдал", inline: true },
               { name: "Баллы", value: score + "/" + QUESTIONS.length, inline: true }
             ],
-            footer: { text: "ФСБ · Кутузовский" },
+            footer: { text: "ФСБ · 2–3 ранг" },
             timestamp: new Date().toISOString()
           }]
         })
@@ -197,17 +205,11 @@
       document.body.appendChild(box);
       try {
         const st = await sendDiscord(score, ok);
-        document.getElementById("hook").textContent = st === "no-hook"
-          ? "Webhook не прописан — в Discord не ушло."
-          : "Отправлено в Discord.";
+        document.getElementById("hook").textContent = st === "no-hook" ? "Webhook не прописан." : "Отправлено в Discord.";
       } catch (e) {
         document.getElementById("hook").textContent = "В Discord не ушло.";
       }
-      document.getElementById("again").onclick = () => {
-        box.remove();
-        answers.fill(null);
-        startScreen();
-      };
+      document.getElementById("again").onclick = () => { box.remove(); answers.fill(null); startScreen(); };
     }
 
     startScreen();
