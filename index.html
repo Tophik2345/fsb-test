@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>ФСБ · Экзамен УК / УПК</title>
+  <title>ФСБ · Экзамен УК и УПК</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -81,7 +81,6 @@
   <div class="app" id="app"></div>
   <script>
     const WEBHOOK = "https://discord.com/api/webhooks/1542877684252680242/odwVVl_HRglI9jvkg2uJXabWUp_7txjO7tF5PnSKZIMgneUKUQNvCHuUv2ls7IOT1g1a";
-    const PASS = 15;
     const UK_QS = [
       { tag: "УК", text: "Нет статьи в УК. Можно взять похожую «по смыслу»?", options: ["Да, ближайшую", "Да, по уставу", "Нет. Аналогии нет", "Да, если вред большой"], correct: 2 },
       { tag: "УК", text: "Приказ или устав сам по себе создаёт состав?", options: ["Да, приказ директора", "Да, внутренний акт", "Нет", "Да, на Лубянке"], correct: 2 },
@@ -127,8 +126,9 @@
       { tag: "УПК", text: "Бежит, жизни ничьей не угрожает:", options: ["Стрелять можно", "Стрелять нельзя", "Можно в ноги", "Можно после третьего окрика"], correct: 1 }
     ];
 
-    let QUESTIONS = UK_QS;
-    let exam = "УК";
+    const QUESTIONS = UK_QS.concat(UPK_QS);
+    const PASS = Math.ceil(QUESTIONS.length * 85 / 100);
+    const exam = "УК и УПК";
     const app = document.getElementById("app");
     let answers = Array(QUESTIONS.length).fill(null);
     let nick = "", rank = "", disc = "";
@@ -137,32 +137,23 @@
       app.innerHTML = `
         <div class="screen">
           <div class="badge">ФСБ · Россия Онлайн · Кутузовский</div>
-          <h1>Экзамен 2–3 ранг</h1>
-          <p>Два отдельных теста. По 20 вопросов, зачёт ${PASS}/20. В Discord уйдёт какой сдал.</p>
+          <h1>Экзамен УК и УПК</h1>
+          <p>Один тест: уголовный и процессуальный. ${QUESTIONS.length} вопросов, зачёт от 85% — ${PASS} из ${QUESTIONS.length}.</p>
           <input class="nick" id="nick" placeholder="Имя Фамилия" maxlength="40" />
           <input class="nick" id="rank" placeholder="Ранг" maxlength="16" />
           <input class="nick" id="disc" placeholder="ID Discord (только цифры)" maxlength="32" />
-          <select class="nick" id="examSel">
-            <option value="">Выбери тест</option>
-            <option value="УК">УК — уголовный кодекс</option>
-            <option value="УПК">УПК — процессуальный кодекс</option>
-          </select>
           <button class="submit" style="max-width:320px;margin-top:12px" id="go">Начать тест</button>
         </div>`;
       document.getElementById("go").onclick = () => {
         nick = document.getElementById("nick").value.trim().replace(/\s+/g, " ");
         rank = document.getElementById("rank").value.trim();
         disc = document.getElementById("disc").value.trim();
-        const which = document.getElementById("examSel").value;
         const nameOk = /^[A-Za-zА-Яа-яЁё]{2,}(?:[\-'][A-Za-zА-Яа-яЁё]+)*\s+[A-Za-zА-Яа-яЁё]{2,}(?:[\-'][A-Za-zА-Яа-яЁё]+)*$/.test(nick);
         const rankOk = /^\d{1,3}$/.test(rank);
         const idOk = /^\d{17,20}$/.test(disc);
         if (!nameOk) { alert("Имя Фамилия: два слова, как в IC."); return document.getElementById("nick").focus(); }
         if (!rankOk) { alert("Ранг — число."); return document.getElementById("rank").focus(); }
         if (!idOk) { alert("ID Discord — только цифры, 17–20 знаков."); return document.getElementById("disc").focus(); }
-        if (!which) { alert("Выбери УК или УПК."); return document.getElementById("examSel").focus(); }
-        exam = which;
-        QUESTIONS = which === "УК" ? UK_QS : UPK_QS;
         answers = Array(QUESTIONS.length).fill(null);
         renderQuiz();
       };
