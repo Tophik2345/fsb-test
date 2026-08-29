@@ -80,6 +80,8 @@
     .hint { font-size: 12px; color: #6e6f84; margin-top: 10px; }
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.62); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 20; }
     .plaque { width: min(340px, 100%); background: #161722; border-radius: 22px; padding: 28px 22px 22px; text-align: center; }
+    .who { font-size: 20px; font-weight: 700; margin: 4px 0 10px; }
+    .meta { color: var(--muted); font-size: 14px; line-height: 1.55; }
   </style>
 </head>
 <body>
@@ -259,8 +261,11 @@
       box.className = "overlay";
       box.innerHTML = `
         <div class="plaque">
-          <div class="badge">${nick} | ${staticId}</div>
-          <div class="status">${ok ? "Сдали" : "Не сдали"} "${exam}"</div>
+          <div class="badge">${ok ? "Сдали" : "Не сдали"} · ${exam}</div>
+          <div class="who">${nick}</div>
+          <div class="meta">Статик: ${staticId}</div>
+          <div class="meta">Ранг: ${rank}</div>
+          <div class="meta">Discord: ${disc}</div>
           <div class="score ${ok ? "pass" : "fail"}">${score}/${QUESTIONS.length}</div>
           <p class="hint" id="hook"></p>
           <button class="ghost" id="again" style="margin:16px 0 0;width:100%">Закрыть</button>
