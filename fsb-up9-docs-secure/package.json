@@ -1,0 +1,1 @@
+{"name":"fsb-up9-docs-secure","private":true,"type":"module","scripts":{"start":"node server.mjs","setup":"node setup-credentials.mjs"},"engines":{"node":">=20"}}
